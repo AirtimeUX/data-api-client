@@ -317,9 +317,11 @@ const formatRecords = (recs,columns,hydrate,formatOptions) => {
 
 // Format record value based on its value, the database column's typeName and the formatting options
 const formatRecordValue = (value,typeName,formatOptions) => {
-  if (formatOptions && formatOptions.deserializeDate && ['DATE', 'DATETIME', 'TIMESTAMP', 'TIMESTAMP WITH TIME ZONE'].includes(typeName)) {
-    return formatFromTimeStamp(value,(formatOptions && formatOptions.treatAsLocalDate) || typeName === 'TIMESTAMP WITH TIME ZONE')
-  } else if (['JSON', 'jsonb'].includes(typeName)) {
+  const typeNameUpper = typeName && typeName.toUpperCase()
+
+  if (formatOptions && formatOptions.deserializeDate && ['DATE', 'DATETIME', 'TIMESTAMP', 'TIMESTAMPTZ', 'TIMESTAMP WITH TIME ZONE'].includes(typeNameUpper)) {
+    return formatFromTimeStamp(value,(formatOptions && formatOptions.treatAsLocalDate) || ['TIMESTAMP WITH TIME ZONE', 'TIMESTAMPTZ'].includes(typeNameUpper))
+  } else if (['JSON', 'JSONB'].includes(typeNameUpper)) {
     return JSON.parse(value)
   } else {
     return value
